@@ -2,7 +2,7 @@
 const Discord = require('discord.js');
 
 // Create an instance of a Discord client
-const client = new Discord.Client();
+var client = new Discord.Client();
 
 // The bot is ready
 client.on('ready', () => {
@@ -13,9 +13,13 @@ client.on('ready', () => {
   client.user.setGame('Moderating');
 });
 
-client.on('message', message => {
-  if (message.content === 'ping') {
-    message.reply('pong');
+client.on('message', function(message) {
+  if (message.channel.name === "trial_help") {
+    if (message.content.startsWith("!help ")) {
+      message.channel.send(`${message.author.username} is requesting assistance! @everyone`, () => {
+        console.log("Sent a message in the " + message.channel.name + " text channel");
+      });
+    }
   }
 });
 
