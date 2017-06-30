@@ -9,8 +9,8 @@ client.on('ready', () => {
   console.log('Bot Started');
 })
 
-client.login(process.env.BOT_TOKEN);
-
 client.on('ready', () => {
-  client.user.setStatus('Moderating');
+  client.user.setGame('Moderating');
 });
+
+client.login(process.env.BOT_TOKEN);
