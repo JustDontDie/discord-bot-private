@@ -1,12 +1,16 @@
 // Requires
-const Discord = require('discord.js')
+const Discord = require('discord.js');
 
 // Create an instance of a Discord client
-const client = new Discord.Client()
+const client = new Discord.Client();
 
 // The bot is ready
 client.on('ready', () => {
-  console.log('Bot Started')
+  console.log('Bot Started');
 })
 
-client.login(process.env.BOT_TOKEN)
+client.login(process.env.BOT_TOKEN);
+
+client.on('ready', () => {
+  client.user.setStatus('Moderating');
+});
