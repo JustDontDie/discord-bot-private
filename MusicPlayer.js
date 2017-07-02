@@ -1,12 +1,15 @@
 const Discord = require('discord.js');
 const YTDL = require('ytdl-core');
 
-var client = new Discord.Client();
-
 function MusicPlayer() {
     this.servers = {};
 }
 
+/**
+ * Play a song/video
+ * @param {Discord.VoiceChannel} [connection] The voice channel you are in
+ * @param {Discord.Message} [message] 
+ */
 MusicPlayer.prototype.playVideo = function(connection, message) {
     if (!connection instanceof Discord.VoiceChannel) {
         var embed = new Discord.RichEmbed();
