@@ -3,8 +3,8 @@ const Discord = require('discord.js');
 
 const PREFIX = "!";
 
-// Create an instance of a Discord client
 var client = new Discord.Client();
+var music = new MusicPlayer();
 
 client.on('ready', () => {
   console.log('Bot Started');
@@ -34,6 +34,46 @@ client.on('message', function(message) {
   switch (command[0].toLowerCase()) {
     case "help":
       client.channels.get("329985394949226506").send(`@everyone, ${message.author.username} is requesting assistance`);
+      break;
+    case "play":
+      if (!args[1]) {
+        message.channel.send("I need a link");
+        return;
+      }
+
+      if (!message.member.voiceChannel) {
+        message.channel.send("You have to be in a voice channel");
+        return;
+      }
+
+      if (!music.servers[message.guild.id]) {
+        music.servers[message.guild.id] = {
+          queue: []
+        };
+      }
+
+      var server = music.servers[message.guild.id];
+      server.queue.push(args[1]);
+
+      if (!message.guild.voiceConnection) {
+        message.member.voiceChannel.join().then(function(connection) {
+          music.playVideo(connection, message);
+        });
+      }
+      break;
+    case "skip":
+      var server = music.servers[message.guild.id];
+
+      if (server.dispatcher) {
+        server.dispatcher.end();
+      }
+      break;
+    case "stop":
+      var server = music.servers[message.guild.id];
+
+      if (message.guild.voiceConnection) {
+        message.guild.voiceConnection.disconnect();
+      }
       break;
     default:
       break;
