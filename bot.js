@@ -38,7 +38,7 @@ client.on('message', function(message) {
       client.channels.get("329985394949226506").send(`@everyone, ${message.author.username} is requesting assistance`);
       break;
     case "play":
-      if (!args[1]) {
+      if (!command[1]) {
         message.channel.send("I need a link");
         return;
       }
@@ -55,7 +55,7 @@ client.on('message', function(message) {
       }
 
       var server = servers[message.guild.id];
-      server.queue.push(args[1]);
+      server.queue.push(command[1]);
 
       if (!message.guild.voiceConnection) {
         message.member.voiceChannel.join().then(function(connection) {
