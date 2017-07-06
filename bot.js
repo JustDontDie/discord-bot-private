@@ -9,21 +9,12 @@ var client = new Discord.Client();
 var servers = [];
 
 client.on('ready', () => {
-  console.log('Bot Started');
-  
+  console.log("Bot online! :D");
+
   var embed = new Discord.RichEmbed();
   embed.setColor("#40C03D");
   embed.addField("Bot Status", "The bot is now online!");
   embed.setFooter("Your bot is now ready to do what it was made to do.");
-
-  client.channels.get("330410520622530562").sendEmbed(embed);
-});
-
-client.on('disconnect', () => {
-  var embed = new Discord.RichEmbed();
-  embed.setColor("#F22213");
-  embed.addField("Bot Status", "The bot has gone offline!");
-  embed.setFooter("The bot may have ran into an error. If you know it didn't, you're good to go. Else, check Heroku for more information");
 
   client.channels.get("330410520622530562").sendEmbed(embed);
 });
@@ -35,11 +26,29 @@ client.on('message', function(message) {
 
   switch (command[0].toLowerCase()) {
     case "help":
+      if (!message.channel.id === "329985394949226506") {
+        message.delete();
+        client.channel.send(message.author + ", that command cannot be used here.");
+        return;
+      }
       client.channels.get("329985394949226506").send(`@everyone, ${message.author.username} is requesting assistance`);
       break;
     case "play":
+      if (message.channel.id !== 332321569818935306) {
+        message.delete();
+        client.channel.send(message.author + ", that command cannot be used here.");
+        return;
+      }
+      
       if (!command[1]) {
         message.channel.send("I need a link.");
+        return;
+      }
+
+      message.delete();
+
+      if ((!command[1].includes("https")) || (!command[1].includes("youtube.com") || (!command[1].includes("youtu.be")))) {
+        message.channel.send("Invalid link.");
         return;
       }
 
@@ -60,6 +69,15 @@ client.on('message', function(message) {
       if (!message.guild.voiceConnection) {
         message.member.voiceChannel.join().then(function(connection) {
           playVideo(connection, message);
+
+          var embed = new Discord.RichEmbed();
+          embed.setColor("#40C03D");
+          YTDL.getInfo(command[1], function(err, info) {
+            embed.addField("Music", info.title + " is now playing");
+          });
+          embed.setFooter("Set back, grab a drink, and enjoy! :D");
+
+          client.channels.get("332321569818935306").sendEmbed(embed);
         });
       }
       break;
@@ -108,4 +126,4 @@ function playVideo(connection, message) {
     });
 }
 
-client.login("MzMwMzkwMTMwNzA1NTYzNjQ4.DD8GZQ.bAyMC2pj_rfobm-iyEGS1_kQdy4");
+client.login(process.env.BOT_TOKEN);
