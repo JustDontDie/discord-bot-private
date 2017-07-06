@@ -6,7 +6,7 @@ const PREFIX = "!";
 
 var client = new Discord.Client();
 
-servers = {};
+var servers = [];
 
 client.on('ready', () => {
   console.log('Bot Started');
@@ -39,16 +39,16 @@ client.on('message', function(message) {
       break;
     case "play":
       if (!command[1]) {
-        message.channel.send("I need a link");
+        message.channel.send("I need a link.");
         return;
       }
 
       if (!message.member.voiceChannel) {
-        message.channel.send("You have to be in a voice channel");
+        message.channel.send("You must to be in a voice channel to use this feature.");
         return;
       }
 
-      if (servers[message.guild.id]) {
+      if (!servers[message.guild.id]) {
         servers[message.guild.id] = {
           queue: []
         };
@@ -74,7 +74,10 @@ client.on('message', function(message) {
       var server = servers[message.guild.id];
 
       if (message.guild.voiceConnection) {
-        message.guild.voiceConnection.disconnect();
+        for (var i = server.queue.length - 1; i >= 0; i--) {
+          server.queue.splice(i, 1);
+        }
+        server.dispatcher.end();
       }
       break;
     default:
@@ -84,38 +87,25 @@ client.on('message', function(message) {
 
 /**
  * Play a song/video
- * @param {Discord.VoiceChannel} [connection] The voice channel you are in
+ * @param {Discord.VoiceConnection} [connection] The voice channel you are in
  * @param {Discord.Message} [message] 
  */
-playVideo = function(connection, message) {
-    if (!connection instanceof Discord.VoiceChannel) {
-        var embed = new Discord.RichEmbed();
-        embed.setColor("#F22213");
-        embed.addField("Eror running !play", "'connection' is not an instance of 'Discord.VoiceChannel'");
-        embed.setFooter("Check your code");
-
-        client.channels.get("330410520622530562").sendEmbed(embed);
-        return;
-    }
-    if (!message instanceof Discord.Message) {
-        var embed = new Discord.RichEmbed();
-        embed.setColor("#F22213");
-        embed.addField("Eror running !play", "'message' is not an instance of 'Discord.Message'");
-        embed.setFooter("Check your code");
-
-        client.channels.get("330410520622530562").sendEmbed(embed);
-        return;
-    }
-
-    var server = this.servers[message.guild.id];
+function playVideo(connection, message) {
+    var server = servers[message.guild.id];
     
-    server.dispatcher = connection.playStream(YTDL(server.queue[0], {filter: "audioonly"}));
+    server.dispatcher = connection.playStream(YTDL(server.queue[0], {
+      filter: "audioonly"
+    }));
+
     server.queue.shift();
+    
     server.dispatcher.on("end", function() {
         if (server.queue[0]) {
             playVideo(connection, message);
+        } else {
+          connection.disconnect();
         }
     });
 }
 
-client.login(process.env.BOT_TOKEN);
+client.login("MzMwMzkwMTMwNzA1NTYzNjQ4.DD8GZQ.bAyMC2pj_rfobm-iyEGS1_kQdy4");
