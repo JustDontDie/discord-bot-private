@@ -14,7 +14,7 @@ client.on('ready', () => {
   var embed = new Discord.RichEmbed();
   embed.setColor("#40C03D");
   embed.addField("Bot Status", "The bot is now online!");
-  embed.setFooter("Your bot is now ready to do what it was made to do.");
+  embed.setFooter("Your bot is now ready to do what it was made to do. ( ͡° ͜ʖ ͡°)");
 
   client.channels.get("330410520622530562").sendEmbed(embed);
 });
